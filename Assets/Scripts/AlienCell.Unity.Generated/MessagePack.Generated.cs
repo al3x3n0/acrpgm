@@ -2545,6 +2545,24 @@ namespace MessagePack.Formatters.AlienCell.Shared.Protocol
     {
 
 
+        private readonly global::MessagePack.Internal.AutomataDictionary ____keyMapping;
+        private readonly byte[][] ____stringByteKeys;
+
+        public RegisterAccountRequestFormatter()
+        {
+            this.____keyMapping = new global::MessagePack.Internal.AutomataDictionary()
+            {
+                { "Address", 0 },
+                { "DeviceUId", 1 },
+            };
+
+            this.____stringByteKeys = new byte[][]
+            {
+                global::MessagePack.Internal.CodeGenHelpers.GetEncodedStringBytes("Address"),
+                global::MessagePack.Internal.CodeGenHelpers.GetEncodedStringBytes("DeviceUId"),
+            };
+        }
+
         public void Serialize(ref MessagePackWriter writer, global::AlienCell.Shared.Protocol.RegisterAccountRequest value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value == null)
@@ -2554,8 +2572,10 @@ namespace MessagePack.Formatters.AlienCell.Shared.Protocol
             }
 
             IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(2);
+            writer.WriteMapHeader(2);
+            writer.WriteRaw(this.____stringByteKeys[0]);
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.Address, options);
+            writer.WriteRaw(this.____stringByteKeys[1]);
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.DeviceUId, options);
         }
 
@@ -2568,13 +2588,19 @@ namespace MessagePack.Formatters.AlienCell.Shared.Protocol
 
             options.Security.DepthStep(ref reader);
             IFormatterResolver formatterResolver = options.Resolver;
-            var length = reader.ReadArrayHeader();
+            var length = reader.ReadMapHeader();
             var __Address__ = default(string);
             var __DeviceUId__ = default(string);
 
             for (int i = 0; i < length; i++)
             {
-                var key = i;
+                ReadOnlySpan<byte> stringKey = global::MessagePack.Internal.CodeGenHelpers.ReadStringSpan(ref reader);
+                int key;
+                if (!this.____keyMapping.TryGetValue(stringKey, out key))
+                {
+                    reader.Skip();
+                    continue;
+                }
 
                 switch (key)
                 {

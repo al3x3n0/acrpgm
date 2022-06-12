@@ -911,12 +911,6 @@
             gpr_clock_type from grpc/support/time.h
             </summary>
         </member>
-        <member name="T:Grpc.Core.Internal.CommonPlatformDetection">
-            <summary>
-            This source file is shared by both Grpc.Core and Grpc.Tools to avoid duplication
-            of platform detection code.
-            </summary>
-        </member>
         <member name="T:Grpc.Core.Internal.CompletionQueueEvent">
             <summary>
             grpc_event from grpc/grpc.h
@@ -1016,11 +1010,6 @@
             if possible or returns null.
             Being able to convert means that the context propagation token is recognized as
             "ours" (was created by this implementation).
-            </summary>
-        </member>
-        <member name="T:Grpc.Core.Internal.CoreErrorDetailException">
-            <summary>
-            Represents error details provides by C-core's debug_error_string
             </summary>
         </member>
         <member name="T:Grpc.Core.Internal.CStringSafeHandle">
@@ -1238,18 +1227,9 @@
             Provides access to the exported native methods.
             </summary>
         </member>
-        <member name="M:Grpc.Core.Internal.NativeExtension.LoadNativeMethodsUsingExplicitLoad">
+        <member name="M:Grpc.Core.Internal.NativeExtension.LoadUnmanagedLibrary">
             <summary>
-            Detects which configuration of native extension to load and explicitly loads the dynamic library.
-            The explicit load makes sure that we can detect any loading problems early on.
-            </summary>
-        </member>
-        <member name="M:Grpc.Core.Internal.NativeExtension.LoadNativeMethodsUsingDllImports">
-            <summary>
-            Loads native methods using the <c>[DllImport(LIBRARY_NAME)]</c> attributes.
-            Note that this way of loading the native extension is "lazy" and doesn't
-            detect any "missing library" problems until we actually try to invoke the native methods
-            (which could be too late and could cause weird hangs at startup)
+            Detects which configuration of native extension to load and load it.
             </summary>
         </member>
         <member name="M:Grpc.Core.Internal.NativeExtension.LoadNativeMethods">
@@ -1269,10 +1249,6 @@
         <member name="M:Grpc.Core.Internal.NativeExtension.LoadNativeMethodsXamarin">
             <summary>
             Return native method delegates when running on the Xamarin platform.
-            On Xamarin, the standard <c>[DllImport]</c> loading logic just works
-            as the native library metadata is provided by the <c>AndroidNativeLibrary</c> or
-            <c>NativeReference</c> items in the Xamarin projects (injected automatically
-            by the Grpc.Core.Xamarin nuget).
             WARNING: Xamarin support is experimental and work-in-progress. Don't expect it to work.
             </summary>
         </member>
@@ -1311,32 +1287,7 @@
         </member>
         <member name="T:Grpc.Core.Internal.NativeMethods.DllImportsFromSharedLib">
             <summary>
-            grpc_csharp_ext used as a shared library (e.g on Unity Standalone and Android).
-            </summary>
-        </member>
-        <member name="T:Grpc.Core.Internal.NativeMethods.DllImportsFromSharedLib_x86">
-            <summary>
-            grpc_csharp_ext used as a shared library (with x86 suffix)
-            </summary>
-        </member>
-        <member name="T:Grpc.Core.Internal.NativeMethods.DllImportsFromSharedLib_x64">
-            <summary>
-            grpc_csharp_ext used as a shared library (with x64 suffix)
-            </summary>
-        </member>
-        <member name="T:Grpc.Core.Internal.NativeMethods.DllImportsFromSharedLib_arm64">
-            <summary>
-            grpc_csharp_ext used as a shared library (with arm64 suffix)
-            </summary>
-        </member>
-        <member name="T:Grpc.Core.Internal.NativeMethods.DllImportsFromSharedLib_x86_dll">
-            <summary>
-            grpc_csharp_ext used as a shared library (with x86.dll suffix)
-            </summary>
-        </member>
-        <member name="T:Grpc.Core.Internal.NativeMethods.DllImportsFromSharedLib_x64_dll">
-            <summary>
-            grpc_csharp_ext used as a shared library (with x64.dll suffix)
+            grpc_csharp_ext used a shared library (e.g on Unity Standalone and Android).
             </summary>
         </member>
         <member name="T:Grpc.Core.Internal.PlatformApis">
@@ -1370,58 +1321,17 @@
             true if running on Xamarin.Android, false otherwise.
             </summary>
         </member>
-        <member name="P:Grpc.Core.Internal.PlatformApis.IsNet5OrHigher">
-            <summary>
-            true if running on .NET 5+, false otherwise.
-            </summary>
-        </member>
-        <member name="P:Grpc.Core.Internal.PlatformApis.FrameworkDescription">
-            <summary>
-            Contains <c>RuntimeInformation.FrameworkDescription</c> if the property is available on current TFM.
-            <c>null</c> otherwise.
-            </summary>
-        </member>
-        <member name="P:Grpc.Core.Internal.PlatformApis.ClrVersion">
-            <summary>
-            Contains the version of common language runtime obtained from <c>Environment.Version</c>
-            if the property is available on current TFM. <c>null</c> otherwise.
-            </summary>
-        </member>
         <member name="P:Grpc.Core.Internal.PlatformApis.IsNetCore">
             <summary>
-            true if running on .NET Core (CoreCLR) or NET 5+, false otherwise.
+            true if running on .NET Core (CoreCLR), false otherwise.
             </summary>
         </member>
-        <member name="M:Grpc.Core.Internal.PlatformApis.GetUnityApplicationPlatform">
+        <member name="M:Grpc.Core.Internal.PlatformApis.GetUnityRuntimePlatform">
             <summary>
             Returns <c>UnityEngine.Application.platform</c> as a string.
             See https://docs.unity3d.com/ScriptReference/Application-platform.html for possible values.
             Value is obtained via reflection to avoid compile-time dependency on Unity.
             This method should only be called if <c>IsUnity</c> is <c>true</c>.
-            </summary>
-        </member>
-        <member name="M:Grpc.Core.Internal.PlatformApis.TryGetUnityApplicationPlatform">
-            <summary>
-            Returns <c>UnityEngine.Application.platform</c> as a string or <c>null</c>
-            if not running on Unity.
-            Value is obtained via reflection to avoid compile-time dependency on Unity.
-            </summary>
-        </member>
-        <member name="M:Grpc.Core.Internal.PlatformApis.TryGetFrameworkDescription">
-            <summary>
-            Returns description of the framework this process is running on.
-            Value is based on <c>RuntimeInformation.FrameworkDescription</c>.
-            </summary>
-        </member>
-        <member name="M:Grpc.Core.Internal.PlatformApis.TryGetClrVersion">
-            <summary>
-            Returns version of the common language runtime this process is running on.
-            Value is based on <c>Environment.Version</c>.
-            </summary>
-        </member>
-        <member name="M:Grpc.Core.Internal.PlatformApis.GetGrpcCoreTargetFrameworkMoniker">
-            <summary>
-            Returns the TFM of the Grpc.Core assembly.
             </summary>
         </member>
         <member name="T:Grpc.Core.Internal.RequestCallContextSafeHandle">
@@ -1612,11 +1522,6 @@
             Similarly as for Mono on Linux, we load symbols for
             dlopen and dlsym from the "libcoreclr.so",
             to avoid the dependency on libc-dev Linux.
-            </summary>
-        </member>
-        <member name="T:Grpc.Core.Internal.UserAgentStringProvider">
-            <summary>
-            Helps constructing the grpc-csharp component of the user agent string.
             </summary>
         </member>
         <member name="T:Grpc.Core.Internal.WellKnownStrings">
@@ -1943,9 +1848,7 @@
         <member name="M:Grpc.Core.Server.Start">
             <summary>
             Starts the server.
-            Throws <c>IOException</c> if not all ports have been bound successfully (see <c>Ports.Add</c> method).
-            Even if some of that ports haven't been bound, the server will still serve normally on all ports that have been
-            bound successfully (and the user is expected to shutdown the server by invoking <c>ShutdownAsync</c> or <c>KillAsync</c>).
+            Throws <c>IOException</c> if not successful.
             </summary>
         </member>
         <member name="M:Grpc.Core.Server.ShutdownAsync">
@@ -2038,13 +1941,13 @@
             <summary>
             Adds a new port on which server should listen.
             Only call this before Start().
-            <returns>The port on which server will be listening. Return value of zero means that binding the port has failed.</returns>
+            <returns>The port on which server will be listening.</returns>
             </summary>
         </member>
         <member name="M:Grpc.Core.Server.ServerPortCollection.Add(System.String,System.Int32,Grpc.Core.ServerCredentials)">
             <summary>
             Adds a new port on which server should listen.
-            <returns>The port on which server will be listening. Return value of zero means that binding the port has failed.</returns>
+            <returns>The port on which server will be listening.</returns>
             </summary>
             <param name="host">the host</param>
             <param name="port">the port. If zero, an unused port is chosen automatically.</param>
