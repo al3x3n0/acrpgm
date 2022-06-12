@@ -40,6 +40,7 @@ namespace AlienCell.Auth
         public async void Start()
         {
             var accountDataPath = GetAccountDataPath();
+            Debug.Log($"Loading account data from: {accountDataPath}");
             if (!File.Exists(accountDataPath))
             {
                 Debug.Log("Starting auth...");
@@ -53,18 +54,23 @@ namespace AlienCell.Auth
 
         public async Task<AccountPersistentData> CreateNewAccountAsync()
         {
-            var client = MagicOnionClient.Create<IAccountService>(GameManager.Instance.Channel);
-            var regAccReq = new RegisterAccountRequest()
+            Debug.Log("CreateNewAccountAsync()");
+            var client = MagicOnionClient.Create<IAccountService>(GameManager.Instance.NewChannel());
+            var regAccReq = new RegisterAccountRequest
             {
                 DeviceUId = SystemInfo.deviceUniqueIdentifier
             };
+            Debug.Log($"Sending request... {regAccReq.DeviceUId}");
             var regAccResp = await client.RegisterAccount(regAccReq);
+            Debug.Log("After req...");
             if (!regAccResp.Success)
             {
-                // TODO handle error
+                Debug.Log("SignUp Failure");
+                Application.Quit();
             }
+            Debug.Log($"SignedUp as {regAccResp.Account.Id.ToString()}; UserId={regAccResp.UserId.ToString()}");
 
-            _accountData = new AccountPersistentData()
+            _accountData = new AccountPersistentData
             {
                 AccountId = regAccResp.Account.Id
             };
@@ -76,13 +82,14 @@ namespace AlienCell.Auth
 
         public async Task<ValidateChallengeResponse> SignInAsync()
         {
-            var client = MagicOnionClient.Create<IAuthService>(GameManager.Instance.Channel);
-            var getChallengeReq = new GetChallengeRequest() 
+            var client = MagicOnionClient.Create<IAuthService>(GameManager.Instance.NewChannel());
+            var getChallengeReq = new GetChallengeRequest
             {
                 UserId = _userId
             };
             var challenge = await client.GetChallengeAsync(getChallengeReq); // Ulid
-            var validateChallengeReq = new ValidateChallengeRequest()
+            Debug.Log(challenge.Challenge);
+            var validateChallengeReq = new ValidateChallengeRequest
             {
 
             };

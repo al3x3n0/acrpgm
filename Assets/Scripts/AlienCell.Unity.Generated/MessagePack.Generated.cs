@@ -2574,7 +2574,7 @@ namespace MessagePack.Formatters.AlienCell.Shared.Protocol
             IFormatterResolver formatterResolver = options.Resolver;
             writer.WriteMapHeader(2);
             writer.WriteRaw(this.____stringByteKeys[0]);
-            formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.Address, options);
+            formatterResolver.GetFormatterWithVerify<byte[]>().Serialize(ref writer, value.Address, options);
             writer.WriteRaw(this.____stringByteKeys[1]);
             formatterResolver.GetFormatterWithVerify<string>().Serialize(ref writer, value.DeviceUId, options);
         }
@@ -2589,7 +2589,7 @@ namespace MessagePack.Formatters.AlienCell.Shared.Protocol
             options.Security.DepthStep(ref reader);
             IFormatterResolver formatterResolver = options.Resolver;
             var length = reader.ReadMapHeader();
-            var __Address__ = default(string);
+            var __Address__ = default(byte[]);
             var __DeviceUId__ = default(string);
 
             for (int i = 0; i < length; i++)
@@ -2605,7 +2605,7 @@ namespace MessagePack.Formatters.AlienCell.Shared.Protocol
                 switch (key)
                 {
                     case 0:
-                        __Address__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
+                        __Address__ = formatterResolver.GetFormatterWithVerify<byte[]>().Deserialize(ref reader, options);
                         break;
                     case 1:
                         __DeviceUId__ = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, options);
